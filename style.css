@@ -1,0 +1,133 @@
+html {
+    font-family: 'IBM Plex Mono', monospace;
+    background-color: #baa88d;
+}
+
+line {
+    stroke: white;
+}
+
+circle {
+    fill: white;
+}
+
+.rockwall {
+    background-image: url("images/empty_composite.png");
+    background-size: 100%;
+    position: relative;
+    float: right;
+    top: 0;
+    z-index: 0;
+    border: 1px solid white;
+}
+
+svg#limblines {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+}
+
+img.position {
+    position: absolute;
+}
+
+div#description {
+    width: 49%;
+    padding: 8px 0.5% 0 0.5%;
+    float: left;
+}
+
+div.header > * {
+    display: inline-block;
+    float: left;
+    width: 20%;
+    margin: 8px 0 0 0;
+}
+
+#current_speed, #current_height {
+    text-align: right;
+}
+
+#current_timestamp {
+    text-align: center;
+}
+
+div#leftside {
+    display: grid;
+    grid-gap: 0;
+    grid-template-columns: 50% 50%;
+}
+
+svg#timeline {
+    background-color: white;
+    width: 100%
+}
+
+.col-1 {
+    width: 32%;
+    display: inline-block;
+}
+
+.col-2 {
+    width: 65%;
+    display: inline-block;
+}
+
+.datalist {
+  margin: 0;
+  list-style: none;
+  height: 100vh;
+  padding: 0;
+  overflow: scroll;
+  -ms-overflow-style: none;  /* No scrollbar: IE and Edge */
+  scrollbar-width: none;  /* No scrollbar: Firefox */
+}
+
+.datalist::-webkit-scrollbar {
+  display: none;
+}
+
+.datalist > lh {
+    text-transform: uppercase;
+    font-size: 9px;
+    background-color: #baa88d;
+    z-index: 10;
+}
+
+.datalist > lh > span {
+    border-bottom: 1px solid black;
+    height: 12px;
+}
+
+.datalist > li {
+    font-size: 10px;
+    height: 18px;
+    position: relative;
+    z-index: 0;
+}
+
+li:hover {
+    background-color: white;
+}
+
+div.arrow {
+    background-image: url("images/directional_arrow.svg");
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 7px;
+    height: 9px;
+    position: absolute;
+    right: 35%;
+}
+
+/* div.movement {
+    display: inline-block;
+    position: relative;
+} */
+
+span.distance {
+    text-align: right;
+    position: absolute;
+    top: 0;
+    right: 0;
+}

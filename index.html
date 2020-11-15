@@ -1,452 +1,324 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+<body>
+        <div class="rockwall one">
+            <svg id="limblines"></svg>
+        </div>
+        <div class="rockwall two"></div>
+
+        <div id="leftside">
+
+            <ul class="datalist">
+                <lh>
+                    <span class="timestamp col-1">Timestamp</span>
+                    <span class="movement col-2">Movement</span>
+                </lh>
+            </ul>
+
+            <svg id="timeline"></div>
+
+        </div>
+
+    </div>
+
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <script>
+    // dynamically size everything according to the window size
+    let svg = d3.select("#limblines"),
+        timeline = d3.select("#timeline"),
+        background1 = d3.selectAll("div.rockwall.one"),
+        background2 = d3.selectAll("div.rockwall.two"),
+        datalist = d3.select("ul.datalist"),
+        window_width = window.innerWidth,
+        window_height = window.innerHeight,
+        img_width = 1001,
+        height = window_height,
+        img_height = 2017,
+        resize_ratio = (height / img_height),
+        width = img_width*resize_ratio;
+        data_loaded = null;
+        limbs = ['RH', 'LH', 'RF', 'LF'];
 
 
-html {
-    font-family: 'IBM Plex Mono', monospace;
-    background-color: #baa88d;
-}
+    svg.attr("width", (width+"px"));
+    svg.attr("height", (height+"px"));
+    svg.style("right", (0+"px"));
 
+    background1.style("width", (width+"px"));
+    background1.style("height", (height+"px"));
+    background1.style("right", (0+"px"));
+    background2.style("width", (width+"px"));
+    background2.style("height", (height+"px"));
 
-line {
-    stroke: white;
-}
+    timeline.style("height", (height+"px"));
 
-circle {
-    fill: white;
-}
+    // make strings numbers
+    function n(d) {
+        return Number(d);
+    }
 
-.rockwall {
-    background-image: url("images/empty_composite.png");
-    background-size: 100%;
-    position: absolute;
-    top: 0;
-    z-index: 0;
-    border: 1px solid white;
-}
+    d3.csv("data/20201108_export.csv", function(error, data) {
+      if (error) throw error;
 
-svg {
-    position: absolute;
-    top: 0;
-    z-index: 1;
-}
+      data_loaded = data;
 
-img.position {
-    position: absolute;
-}
+      console.log(data);
 
-.col-1 {
-    width: 30%;
-    margin: 0 5% 0 0;
-    padding: 0;
-    display: inline-block;
-}
+      let datalistItem = datalist.selectAll('li')
+            .data(data)
+            .enter()
+            .append('li')
+            .on('mouseover', function(d, i) {
+                onionSkin(i);
+            });
 
-.col-2 {
-    width: 60%;
-    margin: 0 5% 0 0;
-    padding: 0;
-    display: inline-block;
-}
+      datalistItem.append('span')
+            .classed('timestamp col-1', true)
+            .text( function(d) {
+                return formatTime(d.Timestamp_Minutes)
+            });
 
-ul {
-    margin: 0;
-    list-style: none;
-    width: 20%;
-    height: 100vh;
-    overflow: scroll;
-}
+      let datalistMovement = datalistItem.append('div')
+            .classed('movement col-2', true);
 
-ul li {
-    height: 18px;
-}
+      datalistMovement.append('span')
+            .text( function(d) {
 
-ul li:hover {
-    background-color: white;
-}
+                let limbMoved = whichLimbMoved(d);
 
-div#description {
-    width: 49%;
-    padding: 8px 0.5% 0 0.5%;
-    float: left;
-}
+                if (limbMoved === null) {
+                    console.log('warning: ')
+                    console.log(d);
+                }
+                
+                return (limbMoved != null) ? formatLimb(limbMoved) : 'Not available';
+            });
 
-div.header > * {
-    display: inline-block;
-    float: left;
-    width: 20%;
-    margin: 8px 0 0 0;
-}
-
-#current_speed, #current_height {
-    text-align: right;
-}
-
-#current_timestamp {
-    text-align: center;
-}
-
-.datalist::-webkit-scrollbar {
-  display: none;
-}
-
-.datalist {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-
-.datalist > lh {
-    text-transform: uppercase;
-    font-size: 9px;
-    width: 24%;
-    position: fixed;
-    background-color: #baa88d;
-    z-index: 10;
-}
-
-.datalist > lh > span {
-    border-bottom: 1px solid black;
-    height: 12px;
-}
-
-.datalist > li {
-    font-size: 10px;
-    position: relative;
-    z-index: 0;
-}
-
-div.arrow {
-    background-image: url("images/directional_arrow.svg");
-    background-repeat: no-repeat;
-    display: inline-block;
-    width: 7px;
-    height: 9px;
-    position: absolute;
-    right: 35%;
-}
-
-div.movement {
-    display: inline-block;
-    position: relative;
-}
-
-span.distance {
-    text-align: right;
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-
-</style>
-
-<svg></svg>
-
-<div class="rockwall one"></div>
-<div class="rockwall two"></div>
-<ul class="datalist">
-    <lh>
-        <span class="timestamp col-1">Timestamp</span>
-        <span class="movement col-2">Movement</span>
-    </lh>
-    <li>
-        <span class="timestamp"></span>
-        <span class="movement"></span>
-        <span class="arrow"></span>
-        <span class="distance"></span>
-    </li>
-</ul>
-<div class="timeline"></div>
-
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script>
-
-// dynamically size everything according to the window size
-let svg = d3.select("svg"),
-    background1 = d3.selectAll("div.rockwall.one"),
-    background2 = d3.selectAll("div.rockwall.two"),
-    datalist = d3.select("ul.datalist"),
-    window_width = window.innerWidth,
-    window_height = window.innerHeight,
-    img_width = 1001,
-    height = window_height,
-    img_height = 2017,
-    resize_ratio = (height / img_height),
-    width = img_width*resize_ratio;
-    data_loaded = null;
-    limbs = ['RH', 'LH', 'RF', 'LF'];
-
-
-svg.attr("width", (width+"px"));
-svg.attr("height", (height+"px"));
-svg.style("right", (0+"px"));
-background1.style("width", (width+"px"));
-background1.style("height", (height+"px"));
-background1.style("right", (0+"px"));
-background2.style("width", (width+"px"));
-background2.style("height", (height+"px"));
-background2.style("right", (width+"px"));
-
-
-// make strings numbers
-function n(d) {
-    return Number(d);
-}
-
-
-d3.csv("data/20201108_export.csv", function(error, data) {
-  if (error) throw error;
-
-  data_loaded = data;
-
-  console.log(data);
-
-  let datalistItem = datalist.selectAll('li')
-        .data(data)
-        .enter()
-        .append('li')
-        .on('mouseover', function(d, i) {
-            onionSkin(i);
-        });
-
-  datalistItem.append('span')
-        .classed('timestamp col-1', true)
-        .text( function(d) {
-            return formatTime(d.Timestamp_Minutes)
-        });
-
-  let datalistMovement = datalistItem.append('div')
-        .classed('movement col-2', true);
-
-  datalistMovement.append('span')
-        .text( function(d) {
-            let limbMoved = whichLimbMoved(d);
-
-            return formatLimb(limbMoved);
-        });
-
-  datalistMovement.append('div')
-        .classed('arrow', true)
-        .style('transform', function(d, i) {
-            let limbMoved = whichLimbMoved(d);
-            let x = n(d[limbMoved+'_X_Delta']);
-            let y = n(d[limbMoved+'_Y_Delta']);
-
-            let degrees = (-1)*(Math.atan(x / y)*(180/Math.PI)).toFixed(2);
-            return 'rotate('+degrees+'deg)';
-        });
-
-  datalistMovement.append('span')
-        .classed('distance', true)
-        .html( function(d) {
-            let limbMoved = whichLimbMoved(d);
-
-            // limb moved returns null if 0s
-            if ( limbMoved != null ) {
-
+      datalistMovement.append('div')
+            .classed('arrow', true)
+            .style('transform', function(d, i) {
+                let limbMoved = whichLimbMoved(d);
                 let x = n(d[limbMoved+'_X_Delta']);
                 let y = n(d[limbMoved+'_Y_Delta']);
 
-                return formatDistance(x, y, n(d['Pixel_Foot']));
+                let degrees = (-1)*(Math.atan(x / y)*(180/Math.PI)).toFixed(2);
+                return 'rotate('+degrees+'deg)';
+            });
 
-            }   else {
+      datalistMovement.append('span')
+            .classed('distance', true)
+            .html( function(d) {
+                let limbMoved = whichLimbMoved(d);
 
-                return 0+"&prime; "+0+"&Prime;";
-            }
+                // limb moved returns null if 0s
+                if ( limbMoved != null ) {
 
-        });
+                    let x = n(d[limbMoved+'_X_Delta']);
+                    let y = n(d[limbMoved+'_Y_Delta']);
 
-  background2.on('mouseover', function() {
-      d3.selectAll('.onion').transition().duration(200).style('opacity', 1);
-  })
+                    return formatDistance(x, y, n(d['Pixel_Foot']));
 
-  // add the images of logan climbing the wall
-  background2.selectAll('img.position')
-        .data(data)
-        .enter()
-        .append('img')
-        .attr('class', function(d, i) {
-            return 'position onion d'+i;
-        })
-        .style('top', function(d) {
-            return (d.Img_Pos_Y_px*resize_ratio)+'px';
-        })
-        .style('left', function(d) {
-            return (d.Img_Pos_X_px*resize_ratio)+'px';
-        })
-        .style('width', function(d) {
-            return (d.Img_Width_px*resize_ratio)+'px';
-        })
-        .style('height', function(d) {
-            return (d.Img_Height_px*resize_ratio)+'px';
-        })
-        .style('z-index', function(d, i) {
-            return 120-i;
-        })
-        .attr('src', function(d, i) {
-            return 'images/sequence_4/'+(119-i)+'.png';
-        });
+                }   else {
+
+                    return 0+"&prime; "+0+"&Prime;";
+                }
+
+            });
+
+      background2.on('mouseover', function() {
+          d3.selectAll('.onion').transition().duration(200).style('opacity', 1);
+      })
+
+      // add the images of logan climbing the wall
+      background2.selectAll('img.position')
+            .data(data)
+            .enter()
+            .append('img')
+            .attr('class', function(d, i) {
+                return 'position onion d'+i;
+            })
+            .style('top', function(d) {
+                return (d.Img_Pos_Y_px*resize_ratio)+'px';
+            })
+            .style('left', function(d) {
+                return (d.Img_Pos_X_px*resize_ratio)+'px';
+            })
+            .style('width', function(d) {
+                return (d.Img_Width_px*resize_ratio)+'px';
+            })
+            .style('height', function(d) {
+                return (d.Img_Height_px*resize_ratio)+'px';
+            })
+            .style('z-index', function(d, i) {
+                return 120-i;
+            })
+            .attr('src', function(d, i) {
+                return 'images/sequence_4/'+(119-i)+'.png';
+            });
 
 
-  // interate through each set of limbs and draw a corresponding line
-  for (var i in limbs) {
+      // interate through each set of limbs and draw a corresponding line
+      for (var i in limbs) {
 
-      // get pixel-value positions
-      function x_pos(d) {
-          return n( d[limbs[i]+'_X'] )*resize_ratio;
+          // get pixel-value positions
+          function x_pos(d) {
+              return n( d[limbs[i]+'_X'] )*resize_ratio;
+          }
+
+          function y_pos(d) {
+              return n( d[limbs[i]+'_Y'] )*resize_ratio;
+          }
+
+          function x_delta(d) {
+              return n( d[limbs[i]+'_X_Delta'] )*resize_ratio;
+          }
+
+          function y_delta(d) {
+              return n( d[limbs[i]+'_Y_Delta'] )*resize_ratio;
+          }
+
+          let line = svg.selectAll('line.'+limbs[i])
+            .data(data)
+            .enter()
+            .append('line')
+            .attr('class', function(d, ix) {
+                return limbs[i]+' onion d'+ix;
+            })
+            .attr('x1', function(d) {
+                return x_pos(d);
+            })
+            .attr('x2', function(d) {
+                return ( x_pos(d) - x_delta(d) );
+            })
+            .attr('y1', function(d) {
+                return y_pos(d);
+            })
+            .attr('y2', function(d) {
+                return ( y_pos(d) - y_delta(d) );
+            });
+
+          let circle = svg.selectAll('circle.'+limbs[i])
+            .data(data)
+            .enter()
+            .append('circle')
+            .attr('cx', function(d) {
+                return x_pos(d);
+            })
+            .attr('cy', function(d) {
+                return y_pos(d);
+            })
+            .attr('r', 2)
+            .attr('class', function(d , ix) {
+                return 'onion d'+ix;
+            });
+
       }
 
-      function y_pos(d) {
-          return n( d[limbs[i]+'_Y'] )*resize_ratio;
-      }
 
-      function x_delta(d) {
-          return n( d[limbs[i]+'_X_Delta'] )*resize_ratio;
-      }
-
-      function y_delta(d) {
-          return n( d[limbs[i]+'_Y_Delta'] )*resize_ratio;
-      }
-
-      let line = svg.selectAll('line.'+limbs[i])
-        .data(data)
-        .enter()
-        .append('line')
-        .attr('class', function(d, ix) {
-            return limbs[i]+' onion d'+ix;
-        })
-        .attr('x1', function(d) {
-            return x_pos(d);
-        })
-        .attr('x2', function(d) {
-            return ( x_pos(d) - x_delta(d) );
-        })
-        .attr('y1', function(d) {
-            return y_pos(d);
-        })
-        .attr('y2', function(d) {
-            return ( y_pos(d) - y_delta(d) );
-        });
-
-      let circle = svg.selectAll('circle.'+limbs[i])
-        .data(data)
-        .enter()
-        .append('circle')
-        .attr('cx', function(d) {
-            return x_pos(d);
-        })
-        .attr('cy', function(d) {
-            return y_pos(d);
-        })
-        .attr('r', 2)
-        .attr('class', function(d , ix) {
-            return 'onion d'+ix;
-        });
-
-  }
-
-
-});
-
-function formatTime(rawTime) {
-    // input is formatted as minutes in decimal (eg 3.456)
-    // converts decimal place to seconds and formats to standard display (12:00)
-    let minutes = Math.floor(rawTime);
-    let seconds = rawTime - minutes;
-        seconds = Math.round((seconds*60), 0);
-        seconds = seconds<10 ? '0'+seconds : seconds;
-
-    return minutes + ':' + seconds;
-}
-
-function formatLimb(limb) {
-
-    switch (limb) {
-        case 'RF':
-            limbText = "Right Foot";
-            break;
-        case 'LF':
-            limbText = "Left Foot";
-            break;
-        case 'RH':
-            limbText = "Right Hand";
-            break;
-        case 'LH':
-            limbText = "Left Hand";
-            break;
-    }
-
-    return limbText;
-
-}
-
-function formatDistance(x, y, pixelFoot) {
-
-    x = Math.abs(x);
-    y = Math.abs(y);
-    console.log(x, y);
-    let dist = Math.sqrt(Math.pow(x, 2)+Math.pow(y, 2));
-        console.log('dist: '+dist);
-        dist = dist/pixelFoot;
-
-    let feet = Math.floor(dist);
-
-    let inches = dist - feet;
-        inches = Math.round((inches*12), 0);
-
-    return feet+'&prime; '+inches+'&Prime;';
-
-}
-
-function whichLimbMoved(d) {
-
-    let limbMoved = null;
-
-    // which appendage moved? The one with a delta not equal to zero
-    limbs.forEach( function(limb, limb_index) {
-        if (n(d[limb+'_X_Delta']) != 0  ||  n(d[limb+'_Y_Delta']) != 0) {
-            limbMoved = limb;
-        }
     });
 
-    return limbMoved;
-}
+    function formatTime(rawTime) {
+        // input is formatted as minutes in decimal (eg 3.456)
+        // converts decimal place to seconds and formats to standard display (12:00)
+        let minutes = Math.floor(rawTime);
+        let seconds = rawTime - minutes;
+            seconds = Math.round((seconds*60), 0);
+            seconds = seconds<10 ? '0'+seconds : seconds;
 
-// current height is the distance of the lowest foot from the ground
-function currentHeight(d) {
+        return minutes + ':' + seconds;
+    }
 
-    // get the position of the lowest limb
-    let lowerLimbPos = d.LF_Y > d.RF_Y ? d.LF_Y : d.RF_Y;
-    let heightFromGround = (real_height - lowerLimbPos)/d.Pixel_Foot;
-    return heightFromGround.toFixed(2);
+    function formatLimb(limb) {
 
-}
+        switch (limb) {
+            case 'RF':
+                limbText = "Right Foot";
+                break;
+            case 'LF':
+                limbText = "Left Foot";
+                break;
+            case 'RH':
+                limbText = "Right Hand";
+                break;
+            case 'LH':
+                limbText = "Left Hand";
+                break;
+        }
+
+        return limbText;
+
+    }
+
+    function formatDistance(x, y, pixelFoot) {
+
+        x = Math.abs(x);
+        y = Math.abs(y);
+        let dist = Math.sqrt(Math.pow(x, 2)+Math.pow(y, 2));
+            dist = dist/pixelFoot;
+
+        let feet = Math.floor(dist);
+
+        let inches = dist - feet;
+            inches = Math.round((inches*12), 0);
+
+        return feet+'&prime; '+inches+'&Prime;';
+
+    }
+
+    function whichLimbMoved(d) {
+
+        let limbMoved = null;
+
+        // which appendage moved? The one with a delta not equal to zero
+        limbs.forEach( function(limb, limb_index) {
+            if (n(d[limb+'_X_Delta']) != 0  ||  n(d[limb+'_Y_Delta']) != 0) {
+                limbMoved = limb;
+            }
+        });
+
+        return limbMoved;
+    }
+
+    // current height is the distance of the lowest foot from the ground
+    function currentHeight(d) {
+
+        // get the position of the lowest limb
+        let lowerLimbPos = d.LF_Y > d.RF_Y ? d.LF_Y : d.RF_Y;
+        let heightFromGround = (real_height - lowerLimbPos)/d.Pixel_Foot;
+        return heightFromGround.toFixed(2);
+
+    }
 
 
-function onionSkin(ix) {
+    function onionSkin(ix) {
 
-    // select all . set opacity to 0
-    let all = d3.selectAll('.onion');
-    all.style('opacity', 0);
+        // select all . set opacity to 0
+        let all = d3.selectAll('.onion');
+        all.style('opacity', 0);
 
-    // select ix +- 5 set opacity to 10
-    d3.selectAll('.d'+(ix+4)).style('opacity', 0.1);
-    d3.selectAll('.d'+(ix-4)).style('opacity', 0.1);
-    // select ix +- 4 set opacity to 20
-    d3.selectAll('.d'+(ix+3)).style('opacity', 0.2);
-    d3.selectAll('.d'+(ix-3)).style('opacity', 0.2);
-    // select ix +- 3 set opacity to 30
-    d3.selectAll('.d'+(ix+2)).style('opacity', 0.3);
-    d3.selectAll('.d'+(ix-2)).style('opacity', 0.3);
-    // select ix +- 2 set opacity to 40
-    d3.selectAll('.d'+(ix+1)).style('opacity', 0.4);
-    d3.selectAll('.d'+(ix-1)).style('opacity', 0.4);
-    // select ix +- 1 set opacity to 50
-    d3.selectAll('.d'+(ix)).style('opacity', 1);
-    // select ix, set opacity to 100
+        // select ix +- 5 set opacity to 10
+        d3.selectAll('.d'+(ix+4)).style('opacity', 0.1);
+        d3.selectAll('.d'+(ix-4)).style('opacity', 0.1);
+        // select ix +- 4 set opacity to 20
+        d3.selectAll('.d'+(ix+3)).style('opacity', 0.2);
+        d3.selectAll('.d'+(ix-3)).style('opacity', 0.2);
+        // select ix +- 3 set opacity to 30
+        d3.selectAll('.d'+(ix+2)).style('opacity', 0.3);
+        d3.selectAll('.d'+(ix-2)).style('opacity', 0.3);
+        // select ix +- 2 set opacity to 40
+        d3.selectAll('.d'+(ix+1)).style('opacity', 0.4);
+        d3.selectAll('.d'+(ix-1)).style('opacity', 0.4);
+        // select ix +- 1 set opacity to 50
+        d3.selectAll('.d'+(ix)).style('opacity', 1);
+        // select ix, set opacity to 100
 
-}
+    }
 
-</script>
+    </script>
+</body>
