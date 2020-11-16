@@ -55,9 +55,14 @@
     background2.style("width", (width+"px"));
     background2.style("height", (height+"px"));
 
-
     // TIMELINE set-up
     timeline.style("height", (height+"px"));
+    const margin = {
+        top: 0,
+        right: 10,
+        bottom: 0,
+        left: 10
+    }
 
     // make strings numbers
     function n(d) {
@@ -75,13 +80,10 @@
 
       x = d3.scaleLinear()
           .domain([0, d3.max(data, function(d) {
-            console.log('domain');
-            console.log(d);
             let dist = getDistance(d, false);
-            console.log(dist);
             return dist;
           })])
-          .range([0, parseInt(timeline.style("width")) ])
+          .range([margin.left, parseInt(timeline.style("width"))-margin.right ])
 
       y = d3.scaleBand()
         .domain(d3.range(data.length))
@@ -90,10 +92,24 @@
 
       let barHeight = height/data.length;
 
-      timeline.selectAll("rect")
+      let barGroup = timeline.selectAll("g")
         .data(data)
         .enter()
-        .append("rect")
+        .append("g")
+        .classed("bar_group", true);
+
+      barGroup.append("rect")
+        .attr("x", x(0))
+        .attr("y", function(d, i) {
+            return y(i);
+        })
+        .attr("width", parseInt(timeline.style("width"))-margin.right)
+        .attr("height", barHeight)
+        .attr("class", function(d, ix) {
+            return "barback onion d"+ix;
+        })
+
+      barGroup.append("rect")
         .attr("x", x(0))
         .attr("y", function(d, i) {
             return y(i);
@@ -103,7 +119,7 @@
             console.log(dist);
             return x(dist) - x(0);
         })
-        .attr("height", y.bandwidth());
+        .attr("height", barHeight/2);
 
 
       // DATALIST - list data and provide main UI
