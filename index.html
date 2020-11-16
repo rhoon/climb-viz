@@ -48,7 +48,6 @@
 
     svg.attr("width", (width+"px"));
     svg.attr("height", (height+"px"));
-    svg.style("right", (0+"px"));
 
     background1.style("width", (width+"px"));
     background1.style("height", (height+"px"));
@@ -56,6 +55,8 @@
     background2.style("width", (width+"px"));
     background2.style("height", (height+"px"));
 
+
+    // TIMELINE set-up
     timeline.style("height", (height+"px"));
 
     // make strings numbers
@@ -69,6 +70,43 @@
       data_loaded = data;
 
       console.log(data);
+
+      // TIMELINE / HORIZONTAL BAR CHART - ref: https://observablehq.com/@d3/horizontal-bar-chart
+
+      x = d3.scaleLinear()
+          .domain([0, d3.max(data, function(d) {
+            console.log('domain');
+            console.log(d);
+            let dist = getDistance(d, false);
+            console.log(dist);
+            return dist;
+          })])
+          .range([0, parseInt(timeline.style("width")) ])
+
+      y = d3.scaleBand()
+        .domain(d3.range(data.length))
+        .rangeRound([0, height])
+        .padding(0.1)
+
+      let barHeight = height/data.length;
+
+      timeline.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", x(0))
+        .attr("y", function(d, i) {
+            return y(i);
+        })
+        .attr("width", function(d) {
+            let dist = getDistance(d, false);
+            console.log(dist);
+            return x(dist) - x(0);
+        })
+        .attr("height", y.bandwidth());
+
+
+      // DATALIST - list data and provide main UI
 
       let datalistItem = datalist.selectAll('li')
             .data(data)
@@ -96,7 +134,7 @@
                     console.log('warning: ')
                     console.log(d);
                 }
-                
+
                 return (limbMoved != null) ? formatLimb(limbMoved) : 'Not available';
             });
 
@@ -114,22 +152,10 @@
       datalistMovement.append('span')
             .classed('distance', true)
             .html( function(d) {
-                let limbMoved = whichLimbMoved(d);
-
-                // limb moved returns null if 0s
-                if ( limbMoved != null ) {
-
-                    let x = n(d[limbMoved+'_X_Delta']);
-                    let y = n(d[limbMoved+'_Y_Delta']);
-
-                    return formatDistance(x, y, n(d['Pixel_Foot']));
-
-                }   else {
-
-                    return 0+"&prime; "+0+"&Prime;";
-                }
-
+                return getDistance(d, true);
             });
+
+      // CREATE ROUTE MAP AND DYNAMIC COMPOSITE
 
       background2.on('mouseover', function() {
           d3.selectAll('.onion').transition().duration(200).style('opacity', 1);
@@ -217,11 +243,28 @@
             .attr('class', function(d , ix) {
                 return 'onion d'+ix;
             });
-
       }
 
-
     });
+
+    function getDistance(d, format) {
+
+        let limbMoved = whichLimbMoved(d);
+
+        // limb moved returns null if 0s
+        if ( limbMoved != null ) {
+
+            let x = n(d[limbMoved+'_X_Delta']);
+            let y = n(d[limbMoved+'_Y_Delta']);
+
+            return format ? formatDistance(x, y, n(d['Pixel_Foot'])) : calcDistance(x, y, n(d['Pixel_Foot']));
+
+        }   else {
+
+            return format ? 0+"&prime; "+0+"&Prime;" : 0;
+        }
+
+    }
 
     function formatTime(rawTime) {
         // input is formatted as minutes in decimal (eg 3.456)
@@ -255,12 +298,19 @@
 
     }
 
-    function formatDistance(x, y, pixelFoot) {
+    function calcDistance(x, y, pixelFoot) {
 
         x = Math.abs(x);
         y = Math.abs(y);
         let dist = Math.sqrt(Math.pow(x, 2)+Math.pow(y, 2));
             dist = dist/pixelFoot;
+
+        return dist;
+    }
+
+    function formatDistance(x, y, pixelFoot) {
+
+        let dist = calcDistance(x, y, pixelFoot);
 
         let feet = Math.floor(dist);
 
