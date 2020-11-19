@@ -16,6 +16,10 @@ circle {
     fill: white;
 }
 
+#nav {
+    background-color: black;
+}
+
 .rockwall {
     background-image: url("images/empty_composite.png");
     background-size: 100%;
@@ -60,7 +64,7 @@ div.header > * {
 div#leftside {
     display: grid;
     grid-gap: 0;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 10% 45% 45%;
 }
 
 svg#timeline {
@@ -106,6 +110,7 @@ rect.barback {
 .datalist > lh > span {
     border-bottom: 1px solid black;
     height: 12px;
+    padding: 0 10px;
 }
 
 .datalist > li {
@@ -113,6 +118,7 @@ rect.barback {
     height: 18px;
     position: relative;
     z-index: 0;
+    padding: 0 10px;
 }
 
 li:hover {

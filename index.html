@@ -13,6 +13,8 @@
 
         <div id="leftside">
 
+            <div id="nav"></div>
+
             <ul class="datalist">
                 <lh>
                     <span class="timestamp col-1">Timestamp</span>
@@ -135,17 +137,6 @@
             return x(dist) - x(0);
         })
         .attr("height", barHeight/2);
-      //
-      // barGroup.append("rect")
-      //   .attr("x", x(0))
-      //   .attr("y", function(d, i) {
-      //       return y(i);
-      //   })
-      //   .attr("width", parseInt(timeline.style("width")) )
-      //   .attr("height", barHeight)
-      //   .attr("fill", "none")
-      //   .classed("mouseover", true)
-
 
       // DATALIST - list data and provide main UI
 
@@ -389,6 +380,36 @@
 
     }
 
+    function select(ix) {
+
+        // a user selects list item ix
+        // it remains highlighted and now when they hover
+        // *** selected = ix;
+
+    }
+
+    // a user can unselect
+    // function deselect() {
+
+    // *** selected = null;
+// }
+
+
+    // function onionSkin(ix) {
+
+        // if (selected != null) {
+            // what to do when something is selected
+                // highlight every item between 'selected' and 'ix'
+                // selection math:
+                    // total distance traveled
+                    // time between
+                    // distance from ground?
+        // } else {
+            // what to do when something isn't selected
+                // (current onionSkin behavior)
+        // }
+
+    // }
 
     function onionSkin(ix) {
 
