@@ -3,6 +3,11 @@ html {
     background-color: #baa88d;
 }
 
+body {
+    margin: 0;
+    padding: 0;
+}
+
 line {
     stroke: white;
 }
@@ -18,7 +23,7 @@ circle {
     float: right;
     top: 0;
     z-index: 0;
-    border: 1px solid white;
+    border: 1px solid black;
 }
 
 svg#limblines {

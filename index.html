@@ -57,12 +57,23 @@
 
     // TIMELINE set-up
     timeline.style("height", (height+"px"));
+
+
     const margin = {
         top: 0,
         right: 10,
         bottom: 0,
         left: 10
     }
+
+    // axis / dividing line
+    timeline.append('line')
+            .attr('x1', margin.right)
+            .attr('x2', margin.right)
+            .attr('y1', 0)
+            .attr('y2', height)
+            .style('stroke', "black")
+            .style('stroke-width', 1);
 
     // make strings numbers
     function n(d) {
@@ -96,7 +107,11 @@
         .data(data)
         .enter()
         .append("g")
-        .classed("bar_group", true);
+        .classed("bar_group", true)
+        .on("mouseover", function(d, i) {
+            onionSkin(i);
+        });
+
 
       barGroup.append("rect")
         .attr("x", x(0))
@@ -107,7 +122,7 @@
         .attr("height", barHeight)
         .attr("class", function(d, ix) {
             return "barback onion d"+ix;
-        })
+        });
 
       barGroup.append("rect")
         .attr("x", x(0))
@@ -120,6 +135,16 @@
             return x(dist) - x(0);
         })
         .attr("height", barHeight/2);
+      //
+      // barGroup.append("rect")
+      //   .attr("x", x(0))
+      //   .attr("y", function(d, i) {
+      //       return y(i);
+      //   })
+      //   .attr("width", parseInt(timeline.style("width")) )
+      //   .attr("height", barHeight)
+      //   .attr("fill", "none")
+      //   .classed("mouseover", true)
 
 
       // DATALIST - list data and provide main UI
@@ -130,6 +155,9 @@
             .append('li')
             .on('mouseover', function(d, i) {
                 onionSkin(i);
+            })
+            .attr("class", function(d, ix) {
+                return "dli"+ix;
             });
 
       datalistItem.append('span')
@@ -367,6 +395,9 @@
         // select all . set opacity to 0
         let all = d3.selectAll('.onion');
         all.style('opacity', 0);
+
+        d3.selectAll('li').style('background-color', 'transparent');
+        d3.select('.dli'+(ix)).style('background-color', 'white');
 
         // select ix +- 5 set opacity to 10
         d3.selectAll('.d'+(ix+4)).style('opacity', 0.1);
