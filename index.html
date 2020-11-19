@@ -380,11 +380,17 @@
 
     }
 
+    // store a selected movement
+    let selected = null;
+
     function select(ix) {
 
         // a user selects list item ix
         // it remains highlighted and now when they hover
-        // *** selected = ix;
+        d3.selectAll('.onion').style('opacity', 0);
+        selected = ix;
+        d3.select('.dli'+ix).style('background-color', 'white');
+        d3.selectAll('.d'+ix).style('opacity', 1);
 
     }
 
@@ -392,51 +398,78 @@
     // function deselect() {
 
     // *** selected = null;
-// }
+    // }
 
 
-    // function onionSkin(ix) {
+    function onionSkin(ix) {
 
-        // if (selected != null) {
-            // what to do when something is selected
+        if (selected != null) {
+            console.log('selected: '+selected);
+
+            // add logans to current range
+            let diff = (selected > ix) ? selected - ix : ix - selected;
+            let max = 119;
+            let min = 0;
+
+            for (i=min; i < diff; i++) {
+
+                let hoverIX = (selected > ix) ? ix + i : selected + i;
+                d3.select('.dli'+hoverIX).style('background-color', 'white');
+                d3.selectAll('.d'+hoverIX).style('opacity', 1)
+            }
+
+            // remove logans not included in range
+            let greater_than = (selected > ix) ? selected : ix;
+
+            let lesser_than = (selected > ix) ? ix : selected;
+
+            for (i = min; i < lesser_than; i++) {
+                d3.selectAll('.d'+i).style('opacity', 0);
+                d3.select('.dli'+i).style('background-color', 'transparent');
+            }
+            for (i = greater_than; i < max; i++ ) {
+                d3.selectAll('.d'+i).style('opacity', 0);
+                d3.select('.dli'+i).style('background-color', 'transparent');
+            }
+
                 // highlight every item between 'selected' and 'ix'
                 // selection math:
                     // total distance traveled
                     // time between
                     // distance from ground?
-        // } else {
+        } else {
             // what to do when something isn't selected
                 // (current onionSkin behavior)
-        // }
-
-    // }
-
-    function onionSkin(ix) {
-
-        // select all . set opacity to 0
-        let all = d3.selectAll('.onion');
-        all.style('opacity', 0);
-
-        d3.selectAll('li').style('background-color', 'transparent');
-        d3.select('.dli'+(ix)).style('background-color', 'white');
-
-        // select ix +- 5 set opacity to 10
-        d3.selectAll('.d'+(ix+4)).style('opacity', 0.1);
-        d3.selectAll('.d'+(ix-4)).style('opacity', 0.1);
-        // select ix +- 4 set opacity to 20
-        d3.selectAll('.d'+(ix+3)).style('opacity', 0.2);
-        d3.selectAll('.d'+(ix-3)).style('opacity', 0.2);
-        // select ix +- 3 set opacity to 30
-        d3.selectAll('.d'+(ix+2)).style('opacity', 0.3);
-        d3.selectAll('.d'+(ix-2)).style('opacity', 0.3);
-        // select ix +- 2 set opacity to 40
-        d3.selectAll('.d'+(ix+1)).style('opacity', 0.4);
-        d3.selectAll('.d'+(ix-1)).style('opacity', 0.4);
-        // select ix +- 1 set opacity to 50
-        d3.selectAll('.d'+(ix)).style('opacity', 1);
-        // select ix, set opacity to 100
+        }
 
     }
+
+    // function onionSkin(ix) {
+    //
+    //     // select all . set opacity to 0
+    //     let all = d3.selectAll('.onion');
+    //     all.style('opacity', 0);
+    //
+    //     d3.selectAll('li').style('background-color', 'transparent');
+    //     d3.select('.dli'+ix).style('background-color', 'white');
+    //
+    //     // select ix +- 5 set opacity to 10
+    //     d3.selectAll('.d'+(ix+4)).style('opacity', 0.1);
+    //     d3.selectAll('.d'+(ix-4)).style('opacity', 0.1);
+    //     // select ix +- 4 set opacity to 20
+    //     d3.selectAll('.d'+(ix+3)).style('opacity', 0.2);
+    //     d3.selectAll('.d'+(ix-3)).style('opacity', 0.2);
+    //     // select ix +- 3 set opacity to 30
+    //     d3.selectAll('.d'+(ix+2)).style('opacity', 0.3);
+    //     d3.selectAll('.d'+(ix-2)).style('opacity', 0.3);
+    //     // select ix +- 2 set opacity to 40
+    //     d3.selectAll('.d'+(ix+1)).style('opacity', 0.4);
+    //     d3.selectAll('.d'+(ix-1)).style('opacity', 0.4);
+    //     // select ix +- 1 set opacity to 50
+    //     d3.selectAll('.d'+ix).style('opacity', 1);
+    //     // select ix, set opacity to 100
+    //
+    // }
 
     </script>
 </body>
