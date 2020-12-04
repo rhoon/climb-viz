@@ -3,6 +3,8 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <!-- <script src="node_modules/lib/animated-scroll-to.js"></script> -->
+
 
 </head>
 <body>
@@ -15,7 +17,7 @@
 
             <div id="nav"></div>
 
-            <ul class="datalist">
+            <ul id="datalist">
                 <lh>
                     <span class="timestamp col-1">Timestamp</span>
                     <span class="movement col-2">Movement</span>
@@ -36,7 +38,7 @@
         timeline = d3.select("#timeline"),
         background1 = d3.selectAll("div.rockwall.one"),
         background2 = d3.selectAll("div.rockwall.two"),
-        datalist = d3.select("ul.datalist"),
+        datalist = d3.select("ul#datalist"),
         window_width = window.innerWidth,
         window_height = window.innerHeight,
         img_width = 1001,
@@ -112,7 +114,10 @@
         .classed("bar_group", true)
         .on("mouseover", function(d, i) {
             onionSkin(i);
-        });
+        })
+        .on("click", function(d, i) {
+            select(i);
+        })
 
 
       barGroup.append("rect")
@@ -146,6 +151,9 @@
             .append('li')
             .on('mouseover', function(d, i) {
                 onionSkin(i);
+            })
+            .on('click', function(d, i) {
+                select(i);
             })
             .attr("class", function(d, ix) {
                 return "dli"+ix;
@@ -220,7 +228,7 @@
                 return 120-i;
             })
             .attr('src', function(d, i) {
-                return 'images/sequence_4/'+(119-i)+'.png';
+                return 'images/sequence_4/'+(120-i)+'.png';
             });
 
 
@@ -380,48 +388,77 @@
 
     }
 
-    // store a selected movement
-    let selected = null;
+    // store a selected range of movements
+    let selected = [null, null];
 
     function select(ix) {
 
         // a user selects list item ix
-        // it remains highlighted and now when they hover
-        d3.selectAll('.onion').style('opacity', 0);
-        selected = ix;
-        d3.select('.dli'+ix).style('background-color', 'white');
-        d3.selectAll('.d'+ix).style('opacity', 1);
+        // it remains highlighted
+
+        // case 1: no logans are selected [null, null]
+        // case 2: one logan is selected [ix, null]
+        // case 3: two logans are selected [ix, ix]
+
+        if (selected[0] != ix && selected[1] != ix) {
+            // if the mouse is not clicking a selected logan...
+            if (selected[0] === null) {
+                // and if no logans are selected, select that logan...
+                selected[0] = ix;
+                d3.selectAll('.onion').style('opacity', 0);
+                d3.select('.dli'+ix).style('background-color', 'white');
+                d3.selectAll('.d'+ix).style('opacity', 1);
+
+                // selecting a logan from the chart scrolls the left side up
+                let scrollDistance = ix * parseInt(d3.select('#datalist li').style('height'));
+                document.querySelector('#datalist').scrollTo(0,scrollDistance);
+
+            } else if (selected[0] != null && selected[1] === null) {
+                // if one logan is selected but the second is not...
+                // select the range
+                selected[1] = ix;
+
+            } else {
+                // otherwise, clear the selection
+                clearSelection();
+            }
+
+        } else {
+             // if the mouse is clicking a selected logan...
+             clearSelection();
+        }
 
     }
 
-    // a user can unselect
-    // function deselect() {
-
-    // *** selected = null;
-    // }
+    function clearSelection() {
+        selected = [null, null];
+        d3.selectAll('li').style('background-color', 'transparent');
+        d3.selectAll('.onion').style('opacity', 1);
+    }
 
 
     function onionSkin(ix) {
 
-        if (selected != null) {
+        if (selected[0] != null && selected[1] === null) {
+            // if one logan is selected but a second logan is not selected
             console.log('selected: '+selected);
 
             // add logans to current range
-            let diff = (selected > ix) ? selected - ix : ix - selected;
+            let diff = (selected[0] > ix) ? selected[0] - ix : ix - selected[0];
             let max = 119;
             let min = 0;
 
             for (i=min; i < diff; i++) {
 
-                let hoverIX = (selected > ix) ? ix + i : selected + i;
-                d3.select('.dli'+hoverIX).style('background-color', 'white');
-                d3.selectAll('.d'+hoverIX).style('opacity', 1)
+                let hoverIX = (selected[0] > ix) ? ix + i : selected[0] + i;
+                d3.select('.dli'+hoverIX).style('background-color', 'rgba(255,255,255,0.5)');
+                d3.selectAll('.d'+hoverIX).style('opacity', .5)
             }
 
             // remove logans not included in range
-            let greater_than = (selected > ix) ? selected : ix;
+            let greater_than = (selected[0] > ix) ? selected[0] : ix;
 
-            let lesser_than = (selected > ix) ? ix : selected;
+            let lesser_than = (selected[0] > ix) ? ix : selected[0];
 
             for (i = min; i < lesser_than; i++) {
                 d3.selectAll('.d'+i).style('opacity', 0);

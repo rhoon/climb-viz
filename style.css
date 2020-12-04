@@ -86,7 +86,7 @@ rect.barback {
     display: inline-block;
 }
 
-.datalist {
+#datalist {
   margin: 0;
   list-style: none;
   height: 100vh;
@@ -96,24 +96,24 @@ rect.barback {
   scrollbar-width: none;  /* No scrollbar: Firefox */
 }
 
-.datalist::-webkit-scrollbar {
+#datalist::-webkit-scrollbar {
   display: none;
 }
 
-.datalist > lh {
+#datalist > lh {
     text-transform: uppercase;
     font-size: 9px;
     background-color: #baa88d;
     z-index: 10;
 }
 
-.datalist > lh > span {
+#datalist > lh > span {
     border-bottom: 1px solid black;
     height: 12px;
     padding: 0 10px;
 }
 
-.datalist > li {
+#datalist > li {
     font-size: 10px;
     height: 18px;
     position: relative;
@@ -123,6 +123,7 @@ rect.barback {
 
 li:hover {
     background-color: white;
+    cursor: pointer;
 }
 
 div.arrow {
@@ -145,4 +146,8 @@ span.distance {
     position: absolute;
     top: 0;
     right: 0;
+}
+
+g.bar_group {
+    cursor: pointer;
 }
