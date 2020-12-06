@@ -1,6 +1,6 @@
 html {
     font-family: 'IBM Plex Mono', monospace;
-    background-color: #baa88d;
+    background-color: #d9cfc5;
 }
 
 body {
@@ -64,7 +64,7 @@ div.header > * {
 div#leftside {
     display: grid;
     grid-gap: 0;
-    grid-template-columns: 10% 45% 45%;
+    grid-template-columns: 30px 45% 45%;
 }
 
 svg#timeline {
@@ -74,6 +74,11 @@ svg#timeline {
 rect.barback {
     fill: white;
     opacity: 0;
+}
+
+rect.bar {
+    fill: #262625;
+    stroke: #d9cfc5;
 }
 
 .col-1 {
@@ -119,6 +124,7 @@ rect.barback {
     position: relative;
     z-index: 0;
     padding: 0 10px;
+    width: calc(100% - 30px);
 }
 
 li:hover {
