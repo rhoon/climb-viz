@@ -17,17 +17,56 @@ circle {
 }
 
 #nav {
-    background-color: black;
+    background-color: #262625;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    font-size: 10px;
+    color: #d9cfc5;
+}
+
+#nav > a {
+    display: inline-block;
+    text-decoration: none;
+    color: #d9cfc5;
+    transform: rotate(-90deg);
+    position: absolute;
+}
+
+#cpright {
+    transform-origin: bottom left;
+    bottom: 10px;
+    left: 20px;
+}
+
+#climb {
+    text-align: right;
+    transform-origin: bottom right;
+    top: 0px;
+    left: -10px;
+}
+
+#about {
+    text-align: right;
+    transform-origin: bottom right;
+    top: 44px;
+    left: -10px;
+}
+
+#process {
+    text-align: right;
+    transform-origin: bottom right;
+    top: 88px;
+    left: -22px;
 }
 
 .rockwall {
-    background-image: url("images/empty_composite.png");
+    background-image: url("images/empty_composite_bitmap.png");
     background-size: 100%;
     position: relative;
     float: right;
     top: 0;
     z-index: 0;
-    border: 1px solid black;
+    border: 1px solid #262625;
 }
 
 svg#limblines {
@@ -46,11 +85,13 @@ div#description {
     float: left;
 }
 
-div.header > * {
-    display: inline-block;
-    float: left;
-    width: 20%;
-    margin: 8px 0 0 0;
+div.header {
+    border-bottom: 1px solid #262625;
+    border-right: 1px solid #262625;
+    font-weight: bold;
+    font-size: 9px;
+    text-transform: uppercase;
+    padding: 8px;
 }
 
 #current_speed, #current_height {
@@ -64,11 +105,13 @@ div.header > * {
 div#leftside {
     display: grid;
     grid-gap: 0;
-    grid-template-columns: 30px 45% 45%;
+    grid-template-columns: 30px calc(50% - 15px) calc(50% - 15px);
+    grid-template-rows: 30px auto;
 }
 
 svg#timeline {
-    width: 100%
+    width: 100%;
+    border: 1px solid #262625;
 }
 
 rect.barback {
@@ -113,7 +156,7 @@ rect.bar {
 }
 
 #datalist > lh > span {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #262625;
     height: 12px;
     padding: 0 10px;
 }
