@@ -1,3 +1,7 @@
+* {
+    margin: 0;
+}
+
 html {
     font-family: 'IBM Plex Mono', monospace;
     background-color: #d9cfc5;
@@ -112,6 +116,7 @@ div#leftside {
 svg#timeline {
     width: 100%;
     border: 1px solid #262625;
+    margin: 0;
 }
 
 rect.barback {
@@ -138,6 +143,7 @@ rect.bar {
   margin: 0;
   list-style: none;
   height: 100vh;
+  width: 100%;
   padding: 0;
   overflow: scroll;
   -ms-overflow-style: none;  /* No scrollbar: IE and Edge */
@@ -167,7 +173,10 @@ rect.bar {
     position: relative;
     z-index: 0;
     padding: 0 10px;
-    width: calc(100% - 30px);
+    width: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 25% 40% 5% 25%;
 }
 
 li:hover {
@@ -181,8 +190,6 @@ div.arrow {
     display: inline-block;
     width: 7px;
     height: 9px;
-    position: absolute;
-    right: 35%;
 }
 
 /* div.movement {
@@ -192,9 +199,6 @@ div.arrow {
 
 span.distance {
     text-align: right;
-    position: absolute;
-    top: 0;
-    right: 0;
 }
 
 g.bar_group {
