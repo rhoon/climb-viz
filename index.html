@@ -22,7 +22,7 @@
                 <a href="#" id="cpright">&copy; 2020 Riley Hoonan</a>
             </div>
 
-            <div class="header">Movement</div>
+            <div class="header" style="border-right: 1px solid #262525">Movement</div>
 
             <div class="header">Distance</div>
 
@@ -47,6 +47,7 @@
         window_height = window.innerHeight,
         img_width = 1001,
         height = window_height,
+        timeline_height = height - 30; // margin for header
         img_height = 2017,
         resize_ratio = (height / img_height),
         width = img_width*resize_ratio;
@@ -64,8 +65,7 @@
     background2.style("height", (height+"px"));
 
     // TIMELINE set-up
-    timeline.style("height", (height+"px"));
-
+    timeline.style("height", (timeline_height+"px"));
 
     const margin = {
         top: 0,
@@ -101,7 +101,7 @@
         .padding(0.1)
 
 
-      let barHeight = (height - 32)/data.length;
+      let barHeight = (timeline_height - 32)/data.length;
 
       let barGroup = timeline.selectAll("g")
         .data(data)
@@ -120,7 +120,7 @@
         .attr("y", function(d, i) {
             return y(i);
         })
-        .attr("width", parseInt(timeline.style("width"))-margin.right)
+        .attr("width", parseInt(timeline.style("width")))
         .attr("height", barHeight)
         .attr("class", function(d, ix) {
             return "barback d"+ix;
@@ -134,7 +134,6 @@
         .attr("class", "bar")
         .attr("width", function(d) {
             let dist = getDistance(d, false);
-            console.log(dist);
             return x(dist) - x(0);
         })
         .attr("height", barHeight);
@@ -387,16 +386,18 @@
 
     function select(ix) {
 
-        // a user selects list item ix
-        // it remains highlighted
+        // a user selects logan x, starting range selection
+        // it remains highlighted until they select logan y, ending range seleection
 
         // case 1: no logans are selected [null, null]
         // case 2: one logan is selected [ix, null]
         // case 3: two logans are selected [ix, ix]
 
         if (selected[0] != ix && selected[1] != ix) {
+
             // if the mouse is not clicking a selected logan...
             if (selected[0] === null) {
+
                 // and if no logans are selected, select that logan...
                 selected[0] = ix;
                 d3.selectAll('.onion').style('opacity', 0);

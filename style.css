@@ -91,7 +91,6 @@ div#description {
 
 div.header {
     border-bottom: 1px solid #262625;
-    border-right: 1px solid #262625;
     font-weight: bold;
     font-size: 9px;
     text-transform: uppercase;
@@ -117,6 +116,9 @@ svg#timeline {
     width: 100%;
     border: 1px solid #262625;
     margin: 0;
+    position: relative;
+    top: -1px;
+    left: -1px;
 }
 
 rect.barback {
@@ -142,7 +144,7 @@ rect.bar {
 #datalist {
   margin: 0;
   list-style: none;
-  height: 100vh;
+  height: calc(100vh - 30px);
   width: 100%;
   padding: 0;
   overflow: scroll;
