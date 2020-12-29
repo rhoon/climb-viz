@@ -80,6 +80,7 @@
     }
 
     d3.csv("data/20201108_export.csv", function(error, data) {
+
       if (error) throw error;
 
       data_loaded = data;
@@ -145,13 +146,16 @@
             .enter()
             .append('li')
             .on('mouseover', function(d, i) {
-                console.log('hover data list '+i);
+                hoverEvent(i);
+            })
+            .on('mouseout', function(d, i) {
+                leaveEvent(i);
             })
             .on('click', function(d, i) {
                 select(i);
             })
-            .attr("class", function(d, ix) {
-                return "li-selector d-li-"+ix;
+            .attr("class", function(d, i) {
+                return "li-selector d-li-"+i;
             });
 
       datalistItem.append('span')
@@ -378,9 +382,6 @@
 
     }
 
-    // a user selects logan x, starting range selection
-    // it remains highlighted until they select logan y, ending range seleection
-
     // store a selected range of movements
     let selected = [null, null];
 
@@ -399,12 +400,8 @@
                 selected[0] = ix;
                 firstSelection(ix);
 
-                // selecting a logan from the chart scrolls the left side up
-                let scrollDistance = ix * parseInt(d3.select('#datalist li').style('height'));
-
             } else if (selected[0] != null && selected[1] === null) {
                 // if one logan is selected but the second is not...
-                // select the range
                 selected[1] = ix;
                 secondSelection();
 
@@ -484,7 +481,64 @@
         d3.select('.d-li-'+ix).classed('highlight', true);
         d3.select('.d-bar-'+ix).classed('highlight', true);
         d3.select('.d-img-'+ix).classed('highlight', true);
-        d3.select('.d-node-'+ix).classed('highlight', true);
+        d3.selectAll('.d-node-'+ix).classed('highlight', true);
+
+    }
+
+    function hoverEvent(ix) {
+
+        if (selected[0] != null && selected[1] == null) {
+            // hover highlights a range if one logan is selected
+
+            // get range
+
+
+        } else if (selected[0] != null && selected[1] != null) {
+            // hover highlights a singular logan if two logans are selected
+
+        } else {
+            // hover highlights a singular logan and dims the rest if no logans are selected
+            // console.log('hover');
+            // d3.selectAll('.img-selector')
+            //     .classed('unselected', true);
+            //
+            // d3.selectAll('.node-selector')
+            //     .classed('unselected', true);
+            //
+            // d3.select('.d-li-'+ix).classed('highlight', true);
+            // d3.select('.d-bar-'+ix).classed('highlight', true);
+            // d3.select('.d-img-'+ix).classed('selected', true);
+            // d3.selectAll('.d-node-'+ix).classed('selected', true);
+        }
+    }
+
+    function leaveEvent(ix) {
+
+        // if (selected[0] == null) {
+        //     console.log('leave');
+        //     clearHighlights();
+        //     clearSelection();
+        // }
+
+    }
+
+    function clearHighlights() {
+
+        d3.selectAll('.img-selector')
+            .classed('highlight', false)
+            .classed('dimmer', false);
+
+        d3.selectAll('.node-selector')
+            .classed('highlight', false)
+            .classed('dimmer', false);
+
+        d3.selectAll('.li-selector')
+            .classed('highlight', false)
+            .classed('dimmer', false);
+
+        d3.selectAll('.bar-selector')
+            .classed('highlight', false)
+            .classed('dimmer', false);
 
     }
 
@@ -493,20 +547,18 @@
 
         selected = [null, null];
 
+        clearHighlights();
+
         d3.selectAll('.img-selector')
-            .classed('highlight', false)
             .classed('unselected', false);
 
         d3.selectAll('.node-selector')
-            .classed('highlight', false)
             .classed('unselected', false);
 
         d3.selectAll('.li-selector')
-            .classed('highlight', false)
             .classed('clicked', false);
 
         d3.selectAll('.bar-selector')
-            .classed('highlight', false)
             .classed('clicked', false);
 
     }

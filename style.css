@@ -253,3 +253,7 @@ g.bar_group {
 .node-selector.unselected {
     opacity: 0;
 }
+
+.dimmer {
+    opacity: 0.3;
+}
