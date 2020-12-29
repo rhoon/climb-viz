@@ -121,11 +121,6 @@ svg#timeline {
     left: -1px;
 }
 
-rect.barback {
-    fill: white;
-    opacity: 0;
-}
-
 rect.bar {
     fill: #262625;
     stroke: #d9cfc5;
@@ -181,11 +176,6 @@ rect.bar {
     grid-template-columns: 25% 40% 5% 25%;
 }
 
-li:hover {
-    background-color: white;
-    cursor: pointer;
-}
-
 div.arrow {
     background-image: url("images/directional_arrow.svg");
     background-repeat: no-repeat;
@@ -205,4 +195,61 @@ span.distance {
 
 g.bar_group {
     cursor: pointer;
+}
+
+/* New Selectors */
+.li-selector {
+
+}
+
+.li-selector.highlight {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.li-selector:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+}
+
+.li-selector.clicked {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.bar-selector {
+    opacity: 0;
+    fill: white;
+}
+
+.bar-selector.highlight {
+    fill: rgba(255, 255, 255, 0.3) !important;
+    opacity: 1 !important;
+}
+
+.bar-selector.clicked {
+    opacity: 1;
+}
+
+.img-selector {
+    opacity: 1;
+    position: absolute;
+}
+
+.img-selector.highlight {
+    opacity: 0.5 !important;
+}
+
+.img-selector.unselected {
+    opacity: 0;
+}
+
+.node-selector {
+    opacity: 1;
+}
+
+.node-selector.highlight {
+    opacity: 0.5 !important;
+}
+
+.node-selector.unselected {
+    opacity: 0;
 }

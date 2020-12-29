@@ -109,7 +109,7 @@
         .append("g")
         .classed("bar_group", true)
         .on("mouseover", function(d, i) {
-            onionSkin(i);
+            console.log('hover bar group '+i);
         })
         .on("click", function(d, i) {
             select(i);
@@ -123,7 +123,7 @@
         .attr("width", parseInt(timeline.style("width")))
         .attr("height", barHeight)
         .attr("class", function(d, ix) {
-            return "barback d"+ix;
+            return "bar-selector d-bar-"+ix;
         });
 
       barGroup.append("rect")
@@ -145,13 +145,13 @@
             .enter()
             .append('li')
             .on('mouseover', function(d, i) {
-                onionSkin(i);
+                console.log('hover data list '+i);
             })
             .on('click', function(d, i) {
                 select(i);
             })
             .attr("class", function(d, ix) {
-                return "dli"+ix;
+                return "li-selector d-li-"+ix;
             });
 
       datalistItem.append('span')
@@ -191,19 +191,16 @@
                 return getDistance(d, true);
             });
 
+
       // CREATE ROUTE MAP AND DYNAMIC COMPOSITE
 
-      background2.on('mouseover', function() {
-          d3.selectAll('.onion').transition().duration(200).style('opacity', 1);
-      })
-
       // add the images of logan climbing the wall
-      background2.selectAll('img.position')
+      background2.selectAll('img.img-selector')
             .data(data)
             .enter()
             .append('img')
             .attr('class', function(d, i) {
-                return 'position onion d'+i;
+                return 'img-selector d-img-'+i;
             })
             .style('top', function(d) {
                 return (d.Img_Pos_Y_px*resize_ratio)+'px';
@@ -250,7 +247,7 @@
             .enter()
             .append('line')
             .attr('class', function(d, ix) {
-                return limbs[i]+' onion d'+ix;
+                return limbs[i]+' node-selector d-node-'+ix;
             })
             .attr('x1', function(d) {
                 return x_pos(d);
@@ -277,7 +274,7 @@
             })
             .attr('r', 2)
             .attr('class', function(d , ix) {
-                return 'onion d'+ix;
+                return 'node-selector d-node-'+ix;
             });
       }
 
@@ -381,13 +378,13 @@
 
     }
 
+    // a user selects logan x, starting range selection
+    // it remains highlighted until they select logan y, ending range seleection
+
     // store a selected range of movements
     let selected = [null, null];
 
     function select(ix) {
-
-        // a user selects logan x, starting range selection
-        // it remains highlighted until they select logan y, ending range seleection
 
         // case 1: no logans are selected [null, null]
         // case 2: one logan is selected [ix, null]
@@ -400,18 +397,16 @@
 
                 // and if no logans are selected, select that logan...
                 selected[0] = ix;
-                d3.selectAll('.onion').style('opacity', 0);
-                d3.select('.dli'+ix).style('background-color', 'white');
-                d3.selectAll('.d'+ix).style('opacity', 1);
+                firstSelection(ix);
 
                 // selecting a logan from the chart scrolls the left side up
                 let scrollDistance = ix * parseInt(d3.select('#datalist li').style('height'));
-                document.querySelector('#datalist').scrollTo(0,scrollDistance);
 
             } else if (selected[0] != null && selected[1] === null) {
                 // if one logan is selected but the second is not...
                 // select the range
                 selected[1] = ix;
+                secondSelection();
 
             } else {
                 // otherwise, clear the selection
@@ -425,56 +420,143 @@
 
     }
 
-    function clearSelection() {
-        selected = [null, null];
-        d3.selectAll('li').style('background-color', 'transparent');
-        d3.selectAll('.onion').style('opacity', 1);
+    function firstSelection(ix) {
+
+        // select image
+        d3.selectAll('.img-selector').classed('unselected', true);
+        d3.select('.d-img-'+ix).classed('unselected', false);
+
+        // select node & lines
+        d3.selectAll('.node-selector').classed('unselected', true);
+        d3.selectAll('.d-node-'+ix).classed('unselected', false);
+
+        // select list items
+        d3.select('.d-li-'+ix).classed('clicked', true);
+
+        // select bar
+        d3.select('.d-bar-'+ix).classed('clicked', true);
+
     }
 
+    function secondSelection() {
 
-    function onionSkin(ix) {
+        // select images
+        d3.selectAll('.img-selector').classed('unselected', true);
+        d3.select('.d-img-'+selected[0]).classed('unselected', false);
+        d3.select('.d-img-'+selected[1]).classed('unselected', false);
 
-        if (selected[0] != null && selected[1] === null) {
-            // if one logan is selected but a second logan is not selected
-            console.log('selected: '+selected);
+        // select nodes & lines
+        d3.selectAll('.node-selector').classed('unselected', true);
+        d3.selectAll('.d-node-'+selected[0]).classed('unselected', false);
+        d3.selectAll('.d-node-'+selected[1]).classed('unselected', false);
 
-            // add logans to current range
-            let diff = (selected[0] > ix) ? selected[0] - ix : ix - selected[0];
-            let max = 119;
-            let min = 0;
+        // select second list item
+        d3.select('.d-li-'+selected[1]).classed('clicked', true);
 
-            for (i=min; i < diff; i++) {
+        // select second bar
+        d3.select('.d-bar-'+selected[1]).classed('clicked', true);
 
-                let hoverIX = (selected[0] > ix) ? ix + i : selected[0] + i;
-                d3.select('.dli'+hoverIX).style('background-color', 'rgba(255,255,255,0.5)');
-                d3.selectAll('.d'+hoverIX).style('opacity', .5)
-            }
+        // highlight the points between the selection
+        let hi, lo;
 
-            // remove logans not included in range
-            let greater_than = (selected[0] > ix) ? selected[0] : ix;
-
-            let lesser_than = (selected[0] > ix) ? ix : selected[0];
-
-            for (i = min; i < lesser_than; i++) {
-                d3.selectAll('.d'+i).style('opacity', 0);
-                d3.select('.dli'+i).style('background-color', 'transparent');
-            }
-            for (i = greater_than; i < max; i++ ) {
-                d3.selectAll('.d'+i).style('opacity', 0);
-                d3.select('.dli'+i).style('background-color', 'transparent');
-            }
-
-                // highlight every item between 'selected' and 'ix'
-                // selection math:
-                    // total distance traveled
-                    // time between
-                    // distance from ground?
+        if (selected[0]>selected[1]) {
+            hi = selected[0]-1;
+            lo = selected[1]+1;
         } else {
-            // what to do when something isn't selected
-                // (current onionSkin behavior)
+            hi = selected[1]-1;
+            lo = selected[0]+1;
+        }
+
+        highlightRange(lo, hi);
+
+    }
+
+    function highlightRange(lo, hi) {
+
+        for (i=lo; i<=hi; i++) {
+            highlightMovement(i);
         }
 
     }
+
+    function highlightMovement(ix) {
+
+        d3.select('.d-li-'+ix).classed('highlight', true);
+        d3.select('.d-bar-'+ix).classed('highlight', true);
+        d3.select('.d-img-'+ix).classed('highlight', true);
+        d3.select('.d-node-'+ix).classed('highlight', true);
+
+    }
+
+
+    function clearSelection() {
+
+        selected = [null, null];
+
+        d3.selectAll('.img-selector')
+            .classed('highlight', false)
+            .classed('unselected', false);
+
+        d3.selectAll('.node-selector')
+            .classed('highlight', false)
+            .classed('unselected', false);
+
+        d3.selectAll('.li-selector')
+            .classed('highlight', false)
+            .classed('clicked', false);
+
+        d3.selectAll('.bar-selector')
+            .classed('highlight', false)
+            .classed('clicked', false);
+
+    }
+
+    function onionSkin(ix) {
+
+    if (selected[0] != null && selected[1] === null) {
+        // if one logan is selected but a second logan is not selected
+        console.log('selected: '+selected);
+
+        // add logans to current range
+        let diff = (selected[0] > ix) ? selected[0] - ix : ix - selected[0];
+        let max = 119;
+        let min = 0;
+
+        for (i=min; i < diff; i++) {
+
+            let hoverIX = (selected[0] > ix) ? ix + i : selected[0] + i;
+
+            d3.select('.dli'+hoverIX).style('background-color', 'rgba(255,255,255,0.5)');
+            d3.selectAll('.d'+hoverIX).style('opacity', .5)
+        }
+
+        // remove logans not included in range
+        let greater_than = (selected[0] > ix) ? selected[0] : ix;
+
+        let lesser_than = (selected[0] > ix) ? ix : selected[0];
+
+        for (i = min; i < lesser_than; i++) {
+            d3.selectAll('.d'+i).style('opacity', 0);
+            d3.select('.dli'+i).style('background-color', 'transparent');
+        }
+        for (i = greater_than; i < max; i++ ) {
+            d3.selectAll('.d'+i).style('opacity', 0);
+            d3.select('.dli'+i).style('background-color', 'transparent');
+        }
+
+            // highlight every item between 'selected' and 'ix'
+            // selection math:
+                // total distance traveled
+                // time between
+                // distance from ground?
+    } else {
+
+        // what to do when something isn't selected
+
+    }
+
+}
+
 
     </script>
 </body>
