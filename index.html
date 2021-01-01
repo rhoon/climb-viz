@@ -8,8 +8,10 @@
 
 </head>
 <body>
+
         <div class="rockwall one">
             <svg id="limblines"></svg>
+            <div id="textcontainer"></div>
         </div>
         <div class="rockwall two"></div>
 
@@ -110,10 +112,10 @@
         .append("g")
         .classed("bar_group", true)
         .on("mouseover", function(d, i) {
-            console.log('hover bar group '+i);
+            hoverEvent(d, i);
         })
         .on("click", function(d, i) {
-            select(i);
+            select(d, i);
         })
 
       barGroup.append("rect")
@@ -146,13 +148,10 @@
             .enter()
             .append('li')
             .on('mouseover', function(d, i) {
-                hoverEvent(i);
-            })
-            .on('mouseout', function(d, i) {
-                leaveEvent(i);
+                hoverEvent(d, i);
             })
             .on('click', function(d, i) {
-                select(i);
+                select(d, i);
             })
             .attr("class", function(d, i) {
                 return "li-selector d-li-"+i;
@@ -377,15 +376,39 @@
 
         // get the position of the lowest limb
         let lowerLimbPos = d.LF_Y > d.RF_Y ? d.LF_Y : d.RF_Y;
-        let heightFromGround = (real_height - lowerLimbPos)/d.Pixel_Foot;
+        console.log(img_height);
+        console.log(lowerLimbPos);
+        console.log(d.Pixel_Foot);
+        let heightFromGround = (img_height - lowerLimbPos)/d.Pixel_Foot;
         return heightFromGround.toFixed(2);
+
+    }
+
+    function displaySelectionData(d, ix) {
+
+        // case 1: first item is selected or nothing is selected
+        console.log(d);
+        let box = d3.select("#textcontainer");
+            box.selectAll("p").remove();
+
+        if (selected[1] == null) {
+
+                box.append("p").text("Movement "+ix+" of 120");
+
+                box.append("p").text( currentHeight(d)+" Feet off the Ground");
+
+        }
+
+        // case 2: second item is selected
 
     }
 
     // store a selected range of movements
     let selected = [null, null];
 
-    function select(ix) {
+    function select(d, ix) {
+
+        displaySelectionData(d, ix);
 
         // case 1: no logans are selected [null, null]
         // case 2: one logan is selected [ix, null]
@@ -453,8 +476,9 @@
         // select second bar
         d3.select('.d-bar-'+selected[1]).classed('clicked', true);
 
+        clearHighlights();
         // highlight the points between the selection
-        let hi, lo;
+        let lo, hi;
 
         if (selected[0]>selected[1]) {
             hi = selected[0]-1;
@@ -465,6 +489,7 @@
         }
 
         highlightRange(lo, hi);
+
 
     }
 
@@ -485,30 +510,47 @@
 
     }
 
-    function hoverEvent(ix) {
+    function hoverEvent(d, ix) {
+
+        displaySelectionData(d, ix);
 
         if (selected[0] != null && selected[1] == null) {
             // hover highlights a range if one logan is selected
+            clearHighlights();
 
             // get range
+            let lo, hi;
 
+            if (ix>selected[0]) {
+                hi = ix;
+                lo = selected[0]+1;
+            } else {
+                hi = selected[0]-1;
+                lo = ix;
+            }
+
+            highlightRange(lo, hi);
+            // highlightRange(lo, hi)
 
         } else if (selected[0] != null && selected[1] != null) {
             // hover highlights a singular logan if two logans are selected
 
         } else {
             // hover highlights a singular logan and dims the rest if no logans are selected
-            // console.log('hover');
-            // d3.selectAll('.img-selector')
-            //     .classed('unselected', true);
-            //
-            // d3.selectAll('.node-selector')
-            //     .classed('unselected', true);
-            //
-            // d3.select('.d-li-'+ix).classed('highlight', true);
-            // d3.select('.d-bar-'+ix).classed('highlight', true);
-            // d3.select('.d-img-'+ix).classed('selected', true);
-            // d3.selectAll('.d-node-'+ix).classed('selected', true);
+            clearSelection();
+            clearHighlights();
+
+            // select image
+            d3.selectAll('.img-selector').classed('unselected', true);
+            d3.select('.d-img-'+ix).classed('unselected', false);
+
+            // select node & lines
+            d3.selectAll('.node-selector').classed('unselected', true);
+            d3.selectAll('.d-node-'+ix).classed('unselected', false);
+
+            // highlight bar and li
+            d3.select('.d-li-'+ix).classed('highlight', true);
+            d3.select('.d-bar-'+ix).classed('highlight', true);
         }
     }
 

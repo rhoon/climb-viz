@@ -257,3 +257,11 @@ g.bar_group {
 .dimmer {
     opacity: 0.3;
 }
+
+#textcontainer > p {
+    background-color: #262625;
+    color: #d9cfc5;
+    font-size: 9px;
+    text-align: right;
+    text-transform: uppercase;
+}
