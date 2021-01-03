@@ -1,0 +1,21 @@
+{
+  "name": "data",
+  "version": "1.0.0",
+  "description": "climb data cleaning and analysis",
+  "main": "real-pos-estimator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "climb-viz"
+  },
+  "author": "Riley Hoonan",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^6.3.1",
+    "d3-regression": "^1.3.5",
+    "fs": "0.0.1-security",
+    "neat-csv": "^6.0.0"
+  }
+}
