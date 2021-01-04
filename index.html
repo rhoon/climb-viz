@@ -24,7 +24,7 @@
                 <a href="#" id="cpright">&copy; 2020 Riley Hoonan</a>
             </div>
 
-            <div class="header" style="border-right: 1px solid #262525">Movement</div>
+            <div class="header" style="border-right: 1px solid #262525">Estimated Movement</div>
 
             <div class="header">Distance</div>
 
@@ -81,7 +81,7 @@
         return Number(d);
     }
 
-    d3.csv("data/20201108_export.csv", function(error, data) {
+    d3.json("data/updated_est_exp.JSON", function(error, data) {
 
       if (error) throw error;
 
@@ -380,7 +380,7 @@
         console.log(lowerLimbPos);
         console.log(d.Pixel_Foot);
         let heightFromGround = (img_height - lowerLimbPos)/d.Pixel_Foot;
-        return heightFromGround.toFixed(2);
+        return heightFromGround.toFixed(0);
 
     }
 
@@ -393,9 +393,9 @@
 
         if (selected[1] == null) {
 
-                box.append("p").text("Movement "+ix+" of 120");
+                box.append("p").text("Movement " + ix + " of 120");
 
-                box.append("p").text( currentHeight(d)+" Feet off the Ground");
+                box.append("p").text(currentHeight(d) + " Ft up (Estimate)");
 
         }
 
