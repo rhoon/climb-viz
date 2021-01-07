@@ -24,7 +24,7 @@
                 <a href="#" id="cpright">&copy; 2020 Riley Hoonan</a>
             </div>
 
-            <div class="header" style="border-right: 1px solid #262525">Estimated Movement</div>
+            <div class="header" style="border-right: 1px solid #262525">Movement</div>
 
             <div class="header">Distance</div>
 
@@ -86,6 +86,7 @@
       if (error) throw error;
 
       data_loaded = data;
+
 
       console.log(data);
 
@@ -221,7 +222,7 @@
                 return 120-i;
             })
             .attr('src', function(d, i) {
-                return 'images/sequence_4/'+(120-i)+'.png';
+                return 'images/sequence_4/'+(119-i)+'.png';
             });
 
 
@@ -376,30 +377,39 @@
 
         // get the position of the lowest limb
         let lowerLimbPos = d.LF_Y > d.RF_Y ? d.LF_Y : d.RF_Y;
-        console.log(img_height);
-        console.log(lowerLimbPos);
-        console.log(d.Pixel_Foot);
         let heightFromGround = (img_height - lowerLimbPos)/d.Pixel_Foot;
         return heightFromGround.toFixed(0);
 
     }
 
+
+    function clearTextDescription() {
+        d3.select("#textcontainer").selectAll("p").remove();
+    }
+
+
     function displaySelectionData(d, ix) {
 
         // case 1: first item is selected or nothing is selected
-        console.log(d);
         let box = d3.select("#textcontainer");
-            box.selectAll("p").remove();
 
-        if (selected[1] == null) {
+        // if no items are selected
+        // if one item is selected, show difference
+        // if two items are selected, nothing
 
+        if (selected[0] == null) {
+                clearTextDescription();
                 box.append("p").text("Movement " + ix + " of 120");
-
                 box.append("p").text(currentHeight(d) + " Ft up (Estimate)");
 
-        }
 
-        // case 2: second item is selected
+        } else if (selected[0] != null && selected[1] == null) {
+
+                clearTextDescription();
+                box.append("p").text("Movements " + selected[0] + "-" + ix + " of 120");
+                box.append("p").text( Math.abs(currentHeight(data_loaded[selected[0]]) - currentHeight(data_loaded[ix])) + " Ft between (Estimate)");
+
+        }
 
     }
 
@@ -537,7 +547,6 @@
 
         } else {
             // hover highlights a singular logan and dims the rest if no logans are selected
-            clearSelection();
             clearHighlights();
 
             // select image
@@ -586,10 +595,11 @@
 
 
     function clearSelection() {
-
+        console.log("clear selection");
         selected = [null, null];
 
         clearHighlights();
+        clearTextDescription();
 
         d3.selectAll('.img-selector')
             .classed('unselected', false);
