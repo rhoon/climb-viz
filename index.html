@@ -9,30 +9,27 @@
 </head>
 <body>
 
-        <div class="rockwall one">
-            <svg id="limblines"></svg>
-            <div id="textcontainer"></div>
+    <div class="rockwall one">
+        <svg id="limblines"></svg>
+        <div id="textcontainer"></div>
+    </div>
+    <div class="rockwall two"></div>
+
+    <div id="leftside">
+
+        <div id="nav">
+            <a href="index.html" id="climb">Climb</a>
+            <a href="about.html" id="about">About</a>
+            <a href="#" id="cpright">&copy; 2020 Riley Hoonan</a>
         </div>
-        <div class="rockwall two"></div>
 
-        <div id="leftside">
+        <div class="header" style="border-right: 1px solid #262525">Movement</div>
 
-            <div id="nav">
-                <a href="#" id="climb">Climb</a>
-                <a href="#" id="about">About</a>
-                <a href="#" id="process">Process</a>
-                <a href="#" id="cpright">&copy; 2020 Riley Hoonan</a>
-            </div>
+        <div class="header">Distance</div>
 
-            <div class="header" style="border-right: 1px solid #262525">Movement</div>
+        <ul id="datalist"></ul>
 
-            <div class="header">Distance</div>
-
-            <ul id="datalist"></ul>
-
-            <svg id="timeline"></div>
-
-        </div>
+        <svg id="timeline"></svg>
 
     </div>
 
@@ -49,12 +46,22 @@
         window_height = window.innerHeight,
         img_width = 1001,
         height = window_height,
-        timeline_height = height - 30; // margin for header
         img_height = 2017,
         resize_ratio = (height / img_height),
-        width = img_width*resize_ratio;
-        data_loaded = null;
+        width = img_width*resize_ratio,
+        data_loaded = null,
         limbs = ['RH', 'LH', 'RF', 'LF'];
+
+    // refresh if window is resized more than 20px
+    function resizeEvent() {
+      if ( Math.abs(window.innerHeight - window_height) >= 50 ) {
+          document.location.reload();
+      } else if ( Math.abs(window.innerWidth - window_width) >= 50 ) {
+          document.location.reload();
+      }
+    }
+
+    window.addEventListener('resize', resizeEvent);
 
 
     svg.attr("width", (width+"px"));
@@ -65,16 +72,6 @@
     background1.style("right", (0+"px"));
     background2.style("width", (width+"px"));
     background2.style("height", (height+"px"));
-
-    // TIMELINE set-up
-    timeline.style("height", (timeline_height+"px"));
-
-    const margin = {
-        top: 0,
-        right: 10,
-        bottom: 0,
-        left: 0
-    }
 
     // make strings numbers
     function n(d) {
@@ -91,21 +88,31 @@
       console.log(data);
 
       // TIMELINE / HORIZONTAL BAR CHART - ref: https://observablehq.com/@d3/horizontal-bar-chart
+      let header = d3.select("div.header"),
+          header_height = parseInt(header.style("height")) + parseInt(header.style("padding-bottom")) + parseInt(header.style("padding-top"));
+          timeline_height = height - header_height;
+          barHeight = Math.floor(timeline_height / data.length);
 
       x = d3.scaleLinear()
           .domain([0, d3.max(data, function(d) {
             let dist = getDistance(d, false);
             return dist;
           })])
-          .range([margin.left, parseInt(timeline.style("width"))-margin.right ])
+          .range([0, parseInt(timeline.style("width"))-0 ]) // first number is left margin second is right margin
 
       y = d3.scaleBand()
         .domain(d3.range(data.length))
-        .range([0, height])
+        .range([0, timeline_height])
         .padding(0.1)
 
 
-      let barHeight = (timeline_height - 32)/data.length;
+
+      console.log("barHeight: "+barHeight);
+      console.log(data.length);
+      console.log(header_height);
+      console.log(timeline_height);
+
+      timeline.style("height", (timeline_height+"px"));
 
       let barGroup = timeline.selectAll("g")
         .data(data)
@@ -116,7 +123,7 @@
             hoverEvent(d, i);
         })
         .on("click", function(d, i) {
-            select(d, i);
+            select(d, i, true);
         })
 
       barGroup.append("rect")
@@ -152,7 +159,7 @@
                 hoverEvent(d, i);
             })
             .on('click', function(d, i) {
-                select(d, i);
+                select(d, i, false);
             })
             .attr("class", function(d, i) {
                 return "li-selector d-li-"+i;
@@ -385,6 +392,7 @@
 
     function clearTextDescription() {
         d3.select("#textcontainer").selectAll("p").remove();
+        d3.select("#textcontainer").selectAll("br").remove();
     }
 
 
@@ -399,25 +407,31 @@
 
         if (selected[0] == null) {
                 clearTextDescription();
+                box.append("br");
                 box.append("p").text("Movement " + ix + " of 120");
-                box.append("p").text(currentHeight(d) + " Ft up (Estimate)");
+                box.append("br");
+                box.append("p").text(currentHeight(d) + " Ft up");
 
 
         } else if (selected[0] != null && selected[1] == null) {
 
                 clearTextDescription();
+                box.append("br");
                 box.append("p").text("Movements " + selected[0] + "-" + ix + " of 120");
-                box.append("p").text( Math.abs(currentHeight(data_loaded[selected[0]]) - currentHeight(data_loaded[ix])) + " Ft between (Estimate)");
+                box.append("br");
+                box.append("p").text( Math.abs(currentHeight(data_loaded[selected[0]]) - currentHeight(data_loaded[ix])) + " Vertical Ft traveled");
+                box.append("br");
+                box.append("p").text( "Clear Selection" ).attr("id", "btn").on("click", function() { clearSelection() });
 
         }
-
     }
 
     // store a selected range of movements
     let selected = [null, null];
 
-    function select(d, ix) {
+    function select(d, ix, barGroup) {
 
+        console.log('barGroup: '+barGroup);
         displaySelectionData(d, ix);
 
         // case 1: no logans are selected [null, null]
@@ -433,10 +447,23 @@
                 selected[0] = ix;
                 firstSelection(ix);
 
+                if (barGroup) {
+                    document.querySelector(".d-li-"+ix).scrollIntoView({
+                      behavior: 'smooth'
+                    });
+                }
+
             } else if (selected[0] != null && selected[1] === null) {
                 // if one logan is selected but the second is not...
                 selected[1] = ix;
                 secondSelection();
+
+                if (barGroup && selected[1] < selected[0]) {
+                    document.querySelector(".d-li-"+ix).scrollIntoView({
+                      behavior: 'smooth'
+                    });
+                }
+
 
             } else {
                 // otherwise, clear the selection

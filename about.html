@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <!-- <script src="node_modules/lib/animated-scroll-to.js"></script> -->
+
+
+</head>
+<body>
+
+    <div id="about">
+
+        <div id="nav">
+            <a href="index.html" id="climb">Climb</a>
+            <a href="#" id="about">About</a>
+            <a href="https://rileyhoonan.com" id="cpright" target="new">&copy; 2020 Riley Hoonan</a>
+        </div>
+
+        <div id="text">
+
+            <p>
+            <b>The Climber in Motion</b> is an experiment in video data and web technology. It is a data-maximalist view of a climb, inspired by Eadweard Muybridge’s famous photo series studying locomotion in horses and humans.
+            </p>
+            <img src="images/about/animal_locomotion.jpg" title="Eadward Muybridge, 1887. Collotype Print from the series Animal Locomotion.">
+            <label>Eadward Muybridge, 1887. Collotype Print from the series "Animal Locomotion."</label>
+
+            <p>
+            Data for this project was extracted from a video, shot on a hand-held mobile device. The background image and stills in the UI are a composite of 120 frames selected from the set of roughly 16 thousand stills making up the video. Each frame can be seen in the final piece; frames are selected based on the climber’s completion of a single movement; eg. one of the climber’s limbs has moved from point A to point B. In a few cases, movements were obscured or difficult to parse; you can see these instances when multiple limbs move between images.
+            </p>
+
+            <img src="images/about/logan_grid.png" title="The curated set of climb images (cropped).">
+            <label>The curated set of climb images (cropped).</label>
+
+            <p>
+            To estimate the distances between each movement, I used known heights (the height of the climber and the total height climbed) to build an exponential regression that estimated the real distance (in feet) per pixel, accounting for distortion caused by perspective. This estimation could be improved with a fixed camera perspective, more detailed topology and/or a myriad of other adjustments, but for now is meant as a proof of concept.
+            </p>
+
+            <p>
+            Stylistic choices were made for the sake of scope and simplicity – black and white imagery is easier to manage for composites; reducing the color gamut means distracting details like the change in lighting quality are mitigated; monospace fonts keep numbers easy to compare.
+            <p>
+
+            <p>
+            <b>Tech:</b><br/>
+            Composite images were built in Photoshop<br/>
+            Pixel-to-foot estimates were built with Node using D3-Regression<br/>
+            Visualizations were built with HTML, CSS, and D3<br/>
+            </p>
+
+            <p>
+            <b>Thank You:</b><br/>
+            Logan Cerelli-Lough, the climber in question, for his collaboration and patience
+            </p>
+
+            <p>
+            Questions, comments or feedback? Please do <a href="https://www.rileyhoonan.com">reach out</a>.
+            </p>
+        </div>
+
+    </div>
+
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+</body>
