@@ -96,6 +96,7 @@ div.header {
     font-size: 9px;
     text-transform: uppercase;
     padding: 8px;
+    position: relative;
 }
 
 #current_speed, #current_height {
@@ -143,6 +144,25 @@ rect.bar {
     display: inline-block;
 }
 
+.info {
+    width: 12px;
+    height: 12px;
+    float: right;
+}
+
+.infobox {
+    position: absolute;
+    z-index: 50;
+    right: 12px;
+    width: 200px;
+    color: #d9cfc5;
+    background-color: #262625;
+    padding: 4px 6px;
+    text-transform: none;
+    font-weight: normal;
+    display: none;
+}
+
 #datalist {
   margin: 0;
   list-style: none;
@@ -152,6 +172,7 @@ rect.bar {
   overflow: scroll;
   -ms-overflow-style: none;  /* No scrollbar: IE and Edge */
   scrollbar-width: none;  /* No scrollbar: Firefox */
+  overflow: -moz-scrollbars-none;
 }
 
 #datalist::-webkit-scrollbar {
@@ -283,7 +304,7 @@ g.bar_group {
 }
 
 #textcontainer > p#btn {
-    background-color: #d9cfc5;
+    background-color: #fff;
     color: #262625;
     cursor: pointer;
 }

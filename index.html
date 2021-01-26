@@ -20,12 +20,30 @@
         <div id="nav">
             <a href="index.html" id="climb">Climb</a>
             <a href="about.html" id="about">About</a>
-            <a href="#" id="cpright">&copy; 2020 Riley Hoonan</a>
+            <a href="rileyhoonan.com" id="cpright">&copy; 2020 Riley Hoonan</a>
         </div>
 
-        <div class="header" style="border-right: 1px solid #262525">Movement</div>
+        <div class="header" style="border-right: 1px solid #262525">
+            Movement <img class="info" src="images/question_mark.svg">
 
-        <div class="header">Distance</div>
+            <div class="infobox">
+                Each Movement includes: <br>
+                • The timestamp during the climb <br>
+                • The limb that moved <br>
+                • The direction it moved in <br>
+                • The distance in feet <br>
+            </div>
+        </div>
+
+
+        <div class="header">
+            Distance <img class="info" src="images/question_mark.svg">
+
+            <div class="infobox">
+                Each bar shows the relative distance climbed, corresponding to the feet/inches in "Movement".
+            </div>
+
+        </div>
 
         <ul id="datalist"></ul>
 
@@ -230,7 +248,17 @@
             })
             .attr('src', function(d, i) {
                 return 'images/sequence_4/'+(119-i)+'.png';
-            });
+            })
+            .on('mouseover', function() {
+                if (selected[0] === null) {
+                    clearSelection();
+                }
+            })
+            .on('click', function() {
+                if (selected[0] != null && selected[1] != null) {
+                    clearSelection();
+                }
+            })
 
 
       // interate through each set of limbs and draw a corresponding line
