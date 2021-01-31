@@ -103,14 +103,6 @@ div.header {
     position: relative;
 }
 
-#current_speed, #current_height {
-    text-align: right;
-}
-
-#current_timestamp {
-    text-align: center;
-}
-
 div#leftside {
     display: grid;
     grid-gap: 0;
@@ -181,7 +173,9 @@ rect.bar {
   overflow: -moz-scrollbars-none;
 }
 
-#datalist::-webkit-scrollbar {
+#datalist::-webkit-scrollbar,
+#rockwall_one::-webkit-scrollbar,
+#rockwall_two::-webkit-scrollbar {
   display: none;
 }
 

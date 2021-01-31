@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>The Climber In Motion</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="mobile.css">
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -9,11 +11,18 @@
 
 </head>
 <body>
-    <div class="rockwall one">
+    <div id="rockwall_one" class="rockwall one">
         <svg id="limblines"></svg>
         <div id="textcontainer"></div>
     </div>
-    <div class="rockwall two"></div>
+
+    <div id="rockwall_two" class="rockwall two"></div>
+
+    <div class="mobile" id="mobileNav">
+        <span onclick="mobileNav('#rockwall_two', this)" style="text-decoration: underline;">Photo</span>
+        <span onclick="mobileNav('#rockwall_one', this)">Line</span>
+        <span onclick="mobileNav('#leftside', this)">Table</span>
+    </div>
 
     <div id="leftside">
 
@@ -61,6 +70,17 @@
         function show(elem_id) {
             d3.select(elem_id).style("display", "block");
         }
+
+        function mobileNav(nav_id, elem) {
+            hide('#rockwall_one');
+            hide('#rockwall_two');
+            hide('#leftside');
+            show(nav_id);
+
+            d3.selectAll('#mobileNav>*').style('text-decoration', 'none');
+            elem.style['text-decoration'] = 'underline';
+        }
+
     </script>
 
     <script>
@@ -73,12 +93,24 @@
         window_width = window.innerWidth,
         window_height = window.innerHeight,
         img_width = 1001,
-        height = window_height,
         img_height = 2017,
-        resize_ratio = (height / img_height),
-        width = img_width*resize_ratio,
         data_loaded = null,
+        height,
+        resize_ratio,
+        width,
         limbs = ['RH', 'LH', 'RF', 'LF'];
+
+    // calculate image size / position based on device
+    let not_mobile = (window_width > 600) ? true : false;
+    if (not_mobile) {
+        height = window_height;
+        resize_ratio = (height / img_height);
+        width = img_width*resize_ratio;
+    } else {
+        width = window_width;
+        resize_ratio = width / img_width;
+        height = img_height * resize_ratio;
+    }
 
     // refresh if window is resized more than 20px
     function resizeEvent() {
@@ -112,7 +144,6 @@
 
       data_loaded = data;
 
-
       console.log(data);
 
       // TIMELINE / HORIZONTAL BAR CHART - ref: https://observablehq.com/@d3/horizontal-bar-chart
@@ -132,13 +163,6 @@
         .domain(d3.range(data.length))
         .range([0, timeline_height])
         .padding(0.1)
-
-
-
-      console.log("barHeight: "+barHeight);
-      console.log(data.length);
-      console.log(header_height);
-      console.log(timeline_height);
 
       timeline.style("height", (timeline_height+"px"));
 
@@ -469,7 +493,6 @@
 
     function select(d, ix, barGroup) {
 
-        console.log('barGroup: '+barGroup);
         displaySelectionData(d, ix);
 
         // case 1: no logans are selected [null, null]

@@ -1,5 +1,5 @@
 /* tablet breakpoint / website breaks at 980 */
-@media only screen and (min-width: 600px) and (max-width: 980px) {
+@media only screen and (min-width: 600px) and (max-width: 1080px) {
 
     .desktop {
         display: none;
@@ -34,5 +34,42 @@
   }
 
   /* reconfigure grid for 1 col + bottom nav */
+  div#leftside {
+      display: grid;
+      grid-gap: 0;
+      grid-template-columns: 100%;
+      grid-template-rows: 30px auto;
+  }
+
+  /* only show one thing at a time, initial just climb */
+  div#leftside {
+      display: none;
+  }
+
+  div.rockwall.one {
+      display: none;
+  }
+
+  div#mobileNav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      color: #d9cfc5;
+      background-color: #262625;
+      font-size: 12px;
+      text-transform: uppercase;
+      height: 20px;
+      width: 100%;
+      padding: 16px 0px;
+  }
+
+  div#mobileNav > span {
+      display: inline-block;
+      width: 32%;
+      text-align: center;
+      cursor: pointer;
+  }
+
 
 }
