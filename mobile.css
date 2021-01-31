@@ -1,0 +1,38 @@
+/* tablet breakpoint / website breaks at 980 */
+@media only screen and (min-width: 600px) and (max-width: 980px) {
+
+    .desktop {
+        display: none;
+    }
+
+    .mobile {
+        display: none;
+    }
+
+    /* reconfigure grid for three col + nav */
+    div#leftside {
+        display: grid;
+        grid-gap: 0;
+        grid-template-columns: 30px calc(100% - 30px);
+        grid-template-rows: 30px auto;
+    }
+
+}
+
+@media only screen and (max-width: 600px) {
+
+  .mobile {
+      display: inherit;
+  }
+
+  .desktop {
+      display: none;
+  }
+
+  .tablet {
+      display: none;
+  }
+
+  /* reconfigure grid for 1 col + bottom nav */
+
+}

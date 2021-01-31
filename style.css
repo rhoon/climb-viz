@@ -20,6 +20,10 @@ circle {
     fill: white;
 }
 
+.mobile {
+    display: none;
+}
+
 #nav {
     background-color: #262625;
     grid-row-start: 1;
@@ -148,6 +152,8 @@ rect.bar {
     width: 12px;
     height: 12px;
     float: right;
+    position: relative;
+    z-index: 99;
 }
 
 .infobox {

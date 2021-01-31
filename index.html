@@ -2,13 +2,13 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile.css">
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <!-- <script src="node_modules/lib/animated-scroll-to.js"></script> -->
 
 
 </head>
 <body>
-
     <div class="rockwall one">
         <svg id="limblines"></svg>
         <div id="textcontainer"></div>
@@ -17,29 +17,29 @@
 
     <div id="leftside">
 
-        <div id="nav">
+        <div class="tablet" id="nav">
             <a href="index.html" id="climb">Climb</a>
             <a href="about.html" id="about">About</a>
             <a href="rileyhoonan.com" id="cpright">&copy; 2020 Riley Hoonan</a>
         </div>
 
         <div class="header" style="border-right: 1px solid #262525">
-            Movement <img class="info" src="images/question_mark.svg">
+            Movement <img onmouseover="show('#movement_info')" onmouseout="hide('#movement_info')" class="info" src="images/question_mark.svg">
 
-            <div class="infobox">
+            <div id="movement_info" class="infobox">
                 Each Movement includes: <br>
                 • The timestamp during the climb <br>
                 • The limb that moved <br>
                 • The direction it moved in <br>
-                • The distance in feet <br>
+                • The distance in feet and inches <br>
             </div>
         </div>
 
 
-        <div class="header">
-            Distance <img class="info" src="images/question_mark.svg">
+        <div class="desktop header">
+            Distance of Movement <img onmouseover="show('#distance_info')" onmouseout="hide('#distance_info')" class="info" src="images/question_mark.svg">
 
-            <div class="infobox">
+            <div id="distance_info" class="infobox">
                 Each bar shows the relative distance climbed, corresponding to the feet/inches in "Movement".
             </div>
 
@@ -47,11 +47,21 @@
 
         <ul id="datalist"></ul>
 
-        <svg id="timeline"></svg>
+        <svg class="desktop" id="timeline"></svg>
 
     </div>
 
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <script>
+        function hide(elem_id) {
+            d3.select(elem_id).style("display", "none");
+        }
+
+        function show(elem_id) {
+            d3.select(elem_id).style("display", "block");
+        }
+    </script>
 
     <script>
     // dynamically size everything according to the window size
