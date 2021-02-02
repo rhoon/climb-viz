@@ -11,10 +11,41 @@
 
 </head>
 <body>
+    <div class="mobile" id="hamburger">
+        <div id="hamburgerBun" onclick="hide('#hamburger>p')"></div>
+        <img src="images/hamburger.svg" onclick="hamburger()"/>
+        <p>
+            The Climber In Motion<br/>
+            <a href="index.html">Climb</a><br/>
+            <a href="about.html">About</a><br/>
+            <br/>
+            <a href="http://www.rileyhoonan.com" target="new">&copy; 2020 Riley Hoonan</a>
+        </p>
+    </div>
+
+    <script>
+        function hide(elem_id) {
+            d3.select(elem_id).style("display", "none");
+        }
+
+        function show(elem_id) {
+            d3.select(elem_id).style("display", "block");
+        }
+
+        function hamburger() {
+            // when hamburger image is clicked
+            if (d3.select('#hamburger>p').style('display') === 'none') {
+                show('#hamburger>p');
+            } else {
+                hide('#hamburger>p');
+            }
+        }
+
+    </script>
 
     <div id="about">
 
-        <div id="nav">
+        <div id="nav" class="tablet">
             <a href="index.html" id="climb">Climb</a>
             <a href="#" id="about">About</a>
             <a href="https://rileyhoonan.com" id="cpright" target="new">&copy; 2020 Riley Hoonan</a>
