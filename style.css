@@ -307,6 +307,8 @@ g.bar_group {
     background-color: #fff;
     color: #262625;
     cursor: pointer;
+    position: relative;
+    z-index: 110;
 }
 
 div#text {
